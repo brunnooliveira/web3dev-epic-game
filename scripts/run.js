@@ -8,7 +8,11 @@ const main = async () => {
 			"https://i.imgur.com/vvcbDYY.jpg",
 		],
     [100, 200, 300], // HP values
-    [100, 50, 25] // Attack damage values
+    [100, 50, 25], // Attack damage values
+		"Carlos Alberto",
+		"https://i.imgur.com/39IjDvE.jpg",
+		10000,
+		50
   );
   await gameContract.deployed();
   console.log("Contrato implantado no endereço:", gameContract.address);
@@ -17,8 +21,14 @@ const main = async () => {
   txn = await gameContract.mintCharacterNFT(2);
   await txn.wait();
 
+  txn = await gameContract.attackBoss();
+  await txn.wait();
+  
+  txn = await gameContract.attackBoss();
+  await txn.wait();
+
   let returnedTokenUri = await gameContract.tokenURI(1);
-  console.log("Token URI:", returnedTokenUri);
+  // console.log("Token URI:", returnedTokenUri);
 };
 
 const runMain = async () => {

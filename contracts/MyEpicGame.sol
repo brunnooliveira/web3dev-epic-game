@@ -28,15 +28,39 @@ contract MyEpicGame is ERC721 {
 
   mapping(uint256 => CharacterAttributes) public nftHolderAttributes;
 
+  struct BigBoss {
+    string name;
+    string imageURI;
+    uint hp;
+    uint maxHp;
+    uint attackDamage;
+  }
+
+  BigBoss public bigBoss;
+
   mapping(address => uint256) public nftHolders;
 
   constructor(
     string[] memory characterNames,
     string[] memory characterImageURIs,
     uint[] memory characterHp,
-    uint[] memory characterAttackDmg
+    uint[] memory characterAttackDmg,
+    string memory bossName, // Essas novas variáveis serão passadas via run.js ou deploy.js
+    string memory bossImageURI,
+    uint bossHp,
+    uint bossAttackDamage
   ) ERC721("Comedians", "COM3")
   {
+    bigBoss = BigBoss({
+      name: bossName,
+      imageURI: bossImageURI,
+      hp: bossHp,
+      maxHp: bossHp,
+      attackDamage: bossAttackDamage
+    });
+
+    console.log("Boss inicializado com sucesso %s com HP %s, img %s", bigBoss.name, bigBoss.hp, bigBoss.imageURI);
+
     for(uint i = 0; i < characterNames.length; i += 1) {
       defaultCharacters.push(CharacterAttributes({
         characterIndex: i,
@@ -52,6 +76,31 @@ contract MyEpicGame is ERC721 {
     }
 
     _tokenIds.increment();
+  }
+
+  function attackBoss() public {
+    uint256 nftTokenIdOfPlayer = nftHolders[msg.sender];
+    CharacterAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
+    console.log("\nJogador com personagem %s ira atacar. Tem %s de HP e %s de Poder de Ataque", player.name, player.hp, player.attackDamage);
+    console.log("Boss %s tem %s de HP e %s de PA", bigBoss.name, bigBoss.hp, bigBoss.attackDamage);
+
+    require (player.hp > 0, "Error: personagem precisa ter HP para atacar o boss.");
+    require (bigBoss.hp > 0,"Error: boss precisa ter HP para atacar o personagem.");
+
+    if (bigBoss.hp < player.attackDamage) {
+      bigBoss.hp = 0;
+    } else {
+      bigBoss.hp = bigBoss.hp - player.attackDamage;
+    }
+
+    if (player.hp < bigBoss.attackDamage) {
+      player.hp = 0;
+    } else {
+      player.hp = player.hp - bigBoss.attackDamage;
+    }
+
+    console.log("Jogador atacou o boss. Boss ficou com HP: %s", bigBoss.hp);
+    console.log("Boss atacou o jogador. Jogador ficou com hp: %s\n", player.hp);
   }
 
   function mintCharacterNFT(uint _characterIndex) external {
