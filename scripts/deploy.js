@@ -16,20 +16,6 @@ const main = async () => {
   );
   await gameContract.deployed();
   console.log("Contrato deployado no endereço:", gameContract.address);
-
-  let txn;
-  // Só temos 3 personagens.
-  // Uma NFT com personagem no index 2 da nossa array.
-  txn = await gameContract.mintCharacterNFT(2);
-  await txn.wait();
-
-  txn = await gameContract.attackBoss();
-  await txn.wait();
-
-  txn = await gameContract.attackBoss();
-  await txn.wait();
-
-  console.log("Done!");
 };
 
 const runMain = async () => {
