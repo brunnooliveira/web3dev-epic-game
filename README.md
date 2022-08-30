@@ -16,12 +16,7 @@ npx hardhat help
 
 ## Deploy RINKEBY
 ```bash
-Contrato implantado no endereço: 0x57Ac1dc8bEdEEe9b2BdCAadc0ee3980c2703A1F9
-Mintou NFT #1
-Mintou NFT #2
-Mintou NFT #3
-Minted NFT #4
-Fim do deploy e mint!
+Contrato deployado no endereço: 0x513FD5D30a1dF81dE490FC2c2846047F586FB09f
 ```
 https://testnets.opensea.io/collection/comedians
 
