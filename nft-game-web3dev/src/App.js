@@ -4,6 +4,7 @@ import twitterLogo from "./assets/twitter-logo.svg"
 import "./App.css"
 import SelectCharacter from "./Components/SelectCharacter";
 import Arena from './Components/Arena';
+import LoadingIndicator from "./Components/LoadingIndicator";
 import { CONTRACT_ADDRESS, CHAIN_ID, transformCharacterData, CHAIN_NAME } from "./constants"
 import myEpicGame from "./utils/MyEpicGame.json";
 
@@ -15,8 +16,10 @@ const App = () => {
   
   const [currentAccount, setCurrentAccount] = useState(null);
   const [characterNFT, setCharacterNFT] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
+    setIsLoading(true);
     checkNetwork();
     checkIfWalletIsConnected();
   }, []);
@@ -40,6 +43,8 @@ const App = () => {
       } else {
         console.log("Nenhum personagem NFT foi encontrado");
       }
+
+      setIsLoading(false);
     };
   
     if (currentAccount) {
@@ -64,19 +69,22 @@ const App = () => {
 
       if (!ethereum) {
         console.log("Eu acho que você não tem a metamask!");
+        setIsLoading(false);
         return;
       } else {
         console.log("Nós temos o objeto ethereum", ethereum);
       }
-        const accounts = await ethereum.request({ method: "eth_accounts" });
+      const accounts = await ethereum.request({ method: "eth_accounts" });
 
-        if (accounts.length !== 0) {
-          const account = accounts[0];
-          console.log("Carteira conectada::", account);
-          setCurrentAccount(account);
-        } else {
-          console.log("Não encontramos uma carteira conectada");
-        }
+      if (accounts.length !== 0) {
+        const account = accounts[0];
+        console.log("Carteira conectada::", account);
+        setCurrentAccount(account);
+      } else {
+        console.log("Não encontramos uma carteira conectada");
+      }
+      setIsLoading(false);
+
     } catch (error) {
       console.log(error);
     }
@@ -103,6 +111,10 @@ const App = () => {
   };
 
   const renderContent = () => {
+    if (isLoading) {
+      return <LoadingIndicator />;
+    }
+
     if (!currentAccount) {
       return (
         <div className="connect-wallet-container">
