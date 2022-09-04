@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { ethers } from "ethers";
 import twitterLogo from "./assets/twitter-logo.svg"
 import "./App.css"
 import SelectCharacter from "./Components/SelectCharacter";
-import { CONTRACT_ADDRESS } from "./constants";
+import { CONTRACT_ADDRESS, CHAIN_ID, transformCharacterData, CHAIN_NAME } from "./constants"
 import myEpicGame from "./utils/MyEpicGame.json";
 
 // Constants
@@ -10,9 +11,51 @@ const TWITTER_HANDLE = "brunnogoliveira"
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`
 
 const App = () => {
-
+  
   const [currentAccount, setCurrentAccount] = useState(null);
   const [characterNFT, setCharacterNFT] = useState(null);
+  
+  useEffect(() => {
+    checkNetwork();
+    checkIfWalletIsConnected();
+  }, []);
+
+  useEffect(() => {
+    const fetchNFTMetadata = async () => {
+      console.log("Verificando pelo personagem NFT no endereço:", currentAccount);
+  
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const gameContract = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        myEpicGame.abi,
+        signer
+      );
+  
+      const txn = await gameContract.checkIfUserHasNFT();
+      if (txn.name) {
+        console.log("Usuário tem um personagem NFT");
+        setCharacterNFT(transformCharacterData(txn));
+      } else {
+        console.log("Nenhum personagem NFT foi encontrado");
+      }
+    };
+  
+    if (currentAccount) {
+      console.log("Conta Atual:", currentAccount);
+      fetchNFTMetadata();
+    }
+  }, [currentAccount]);
+  
+  const checkNetwork = async () => {
+    try {
+      if (window.ethereum.networkVersion !== CHAIN_ID) {
+        alert(`Please connect to ${CHAIN_NAME}!`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -37,10 +80,6 @@ const App = () => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    checkIfWalletIsConnected();
-  }, []);
 
   const connectWalletAction = async () => {
     try {
