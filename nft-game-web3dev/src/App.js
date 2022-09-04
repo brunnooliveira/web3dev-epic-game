@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import twitterLogo from "./assets/twitter-logo.svg"
 import "./App.css"
 import SelectCharacter from "./Components/SelectCharacter";
+import Arena from './Components/Arena';
 import { CONTRACT_ADDRESS, CHAIN_ID, transformCharacterData, CHAIN_NAME } from "./constants"
 import myEpicGame from "./utils/MyEpicGame.json";
 
@@ -119,6 +120,8 @@ const App = () => {
       );
     } else if (currentAccount && !characterNFT) {
       return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
+    } else if (currentAccount && characterNFT) {
+      return <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} />;
     }
   };
 
